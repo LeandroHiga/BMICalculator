@@ -10,6 +10,9 @@ import UIKit
 
 class CalculateViewController: UIViewController {
 
+
+    var calculatorBrain = CalculatorBrain()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -34,17 +37,30 @@ class CalculateViewController: UIViewController {
         weightLabel.text = "\(weight)Kg"
     }
 
-
+    // When calculate button is pressed
     @IBAction func calculatePressed(_ sender: UIButton) {
         let height = heightSlider.value
         let weight = weightSlider.value
-        let bmi = weight / pow(height, 2)
+
+        // Calculate BMI
+        calculatorBrain.calculateBMI(height: height, weight: weight)
         
-        // Create a SecondViewController object
-        let secondVC = SecondViewController()
-        // Pass bmi value to the new object
-        secondVC.bmiValue = String(format: "%.1f", bmi)
-        self.present(secondVC, animated: true, completion: nil)
+        // Performe Segue
+        self.performSegue(withIdentifier: "goToResult", sender: self)
+        
+    }
+    
+    // Method thaw will be triggered when a segue is performed
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "goToResult" {
+            let destinationVC = segue.destination as! ResultViewController
+            
+            // This values is passed to ResultViewController
+            destinationVC.bmiValue = calculatorBrain.getBMIValue()
+            destinationVC.advice = calculatorBrain.getAdvice()
+            destinationVC.color = calculatorBrain.getColor()
+            
+        }
     }
     
 }
